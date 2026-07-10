@@ -4,15 +4,16 @@ set -e
 
 echo "=== Angular Test Runner ==="
 
-# Nettoyage des anciens rapports
 echo "Cleaning previous test reports..."
 rm -rf test-results
 
-# Installation des dépendances
-echo "Installing dependencies..."
-npm ci
+if [ "$CI" = "true" ]; then
+    echo "CI detected: installing dependencies..."
+    npm ci
+else
+    echo "Local execution: using existing node_modules"
+fi
 
-# Exécution des tests
 echo "Running Angular unit tests..."
 npm test
 
