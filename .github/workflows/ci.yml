@@ -55,3 +55,11 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: gradle
+
+      # Donner les droits d'exécution au script
+      - name: Make test script executable
+        run: chmod +x run-tests.sh
+
+      # Exécuter les tests
+      - name: Run tests
+        run: ./run-tests.sh
