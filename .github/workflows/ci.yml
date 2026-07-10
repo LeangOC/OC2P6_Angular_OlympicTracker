@@ -17,9 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Récupération du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Détection automatique du type de projet
       - name: Detect project type
         id: detect
         shell: bash
@@ -33,5 +35,23 @@ jobs:
             exit 1
           fi
 
+      # (Temporaire) Affichage du type détecté
       - name: Display detected project
         run: echo "Detected project = ${{ steps.detect.outputs.project_type }}"
+
+      # Installation de Node.js uniquement pour Angular
+      - name: Setup Node.js
+        if: steps.detect.outputs.project_type == 'angular'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Installation de Java uniquement pour Spring Boot
+      - name: Setup Java
+        if: steps.detect.outputs.project_type == 'spring'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
