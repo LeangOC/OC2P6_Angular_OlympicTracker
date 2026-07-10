@@ -1,0 +1,37 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect project type
+        id: detect
+        shell: bash
+        run: |
+          if [ -f "package.json" ]; then
+            echo "project_type=angular" >> "$GITHUB_OUTPUT"
+          elif [ -f "build.gradle" ]; then
+            echo "project_type=spring" >> "$GITHUB_OUTPUT"
+          else
+            echo "Unsupported project"
+            exit 1
+          fi
+
+      - name: Display detected project
+        run: echo "Detected project = ${{ steps.detect.outputs.project_type }}"
