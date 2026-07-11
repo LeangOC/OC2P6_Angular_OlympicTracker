@@ -63,3 +63,11 @@ jobs:
       # Exécuter les tests
       - name: Run tests
         run: ./run-tests.sh
+
+      # Publication des rapports
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
