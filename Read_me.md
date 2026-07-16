@@ -24,11 +24,17 @@ sauvegarde de main
 
 - adapter la pipeline ci/cd à la branche main
 
-- Pour démarrer l'application :
+- Pour démarrer l'application :  
 > $ docker compose up -d  
 
-- Pour déclencher la pipeline ci/cd : Faire un "push" sur cette branche "main" :
->  $ git commit -m "fix: Test-Release-Build main"
->  $ git push
+- Pour déclencher la pipeline ci/cd : Faire un "push" sur cette branche "main" :  
+  >  git commit -m "fix: Test-Release-Build main"  
+  >  git push    
 
-Pipepline ci/cd sur Github Action : 
+Pipepline ci/cd sur Github Action :  
+![Pipeline_CI_CD_Frontend.png](screenshot/Pipeline_CI_CD_Frontend.png)  
+
+Image docker frontend avec release publié sur le registry ghrc.io :  
+![cd_image_docker_release_registry.png](screenshot/cd_image_docker_release_registry.png)  
+
+
