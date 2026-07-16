@@ -1,3 +1,4 @@
+# Permissions requises pour le workflow
 permissions:
   contents: write
   checks: write
@@ -5,18 +6,18 @@ permissions:
   issues: write
   pull-requests: write
 
+# Définition du workflow CI
 name: Continuous Integration
 on:
   push:
     branches:
       - main
-      - develop
 
   pull_request:
     branches:
       - main
-      - develop
 
+# Définition des différents jobs
 jobs:
   test:
     name: Run Tests
@@ -78,6 +79,7 @@ jobs:
           name: test-results
           path: test-results/
 
+      # Publication des résultats des tests sur GitHub
       - name: Publish Test Report
         if: always()
         uses: dorny/test-reporter@v2
@@ -92,19 +94,21 @@ jobs:
     runs-on: ubuntu-latest
 
     # Choisir develop ou main selon la stratégie
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/main'
 
     steps:
+       # Récupération du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Installation de Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
 
-
+      # Installation de semantic-release et de ses plugins
       - name: Install semantic-release
         run: |
           npm install --no-save \
@@ -115,11 +119,13 @@ jobs:
             @semantic-release/github \
             @semantic-release/git
 
+      # Génération automatique de la release
       - name: Run semantic-release (without dry run)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
 
+      # Vérification du lancement de la release
       - name: Release placeholder
         run: echo "Release job started"
 
@@ -130,23 +136,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Récupération du dépôt
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      # Normalisation du nom de l'image Docker
       - name: Normalize image name
         run: |
           echo "IMAGE_NAME=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
+      # Récupération des tags Git
       - name: Fetch tags
         run: git fetch --tags
 
+      # Récupération de la dernière version
       - name: Get latest version
         run: |
           VERSION=$(git describe --tags --abbrev=0)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Detected version: $VERSION"
 
+      # Installation de Java si projet Spring
       - name: Setup Java
         if: hashFiles('build.gradle') != ''
         uses: actions/setup-java@v4
@@ -155,14 +167,17 @@ jobs:
           java-version: 21
           cache: gradle
 
+      # Autoriser l'exécution de Gradle
       - name: Make Gradle executable
         if: hashFiles('gradlew') != ''
         run: chmod +x gradlew
 
+      # Compilation du projet Spring Boot
       - name: Build Spring Boot WAR
         if: hashFiles('build.gradle') != ''
         run: ./gradlew bootWar
 
+      # Connexion au registre GitHub
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -170,6 +185,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Construction et publication de l'image Docker
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:

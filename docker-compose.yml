@@ -1,4 +1,7 @@
+# Définition des services de l'application
 services:
+
+  # Service frontend Angular
   frontend:
     build: .
     ports:
